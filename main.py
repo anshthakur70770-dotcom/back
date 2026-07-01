@@ -2,8 +2,20 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from login import signup,login
 from dashboard import all_classes,create_class
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",  # Allows your local Next.js development server
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows POST, GET, OPTIONS, etc.
+    allow_headers=["*"],  # Allows all headers
+)
+
 class signup_detail(BaseModel):
     d_name :str
     name:str
