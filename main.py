@@ -1,19 +1,17 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,UploadFile,File,Form
 from pydantic import BaseModel
 from login import signup,login
-from dashboard import all_classes,create_class
+from dashboard import all_classes,create_class,all_assigments,create_assigment
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",  # Allows your local Next.js development server
-    ],
+    allow_origins=["*"],  # Allows all origins for clean local & deployment testing
     allow_credentials=True,
-    allow_methods=["*"],  # Allows POST, GET, OPTIONS, etc.
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 class signup_detail(BaseModel):
@@ -32,7 +30,10 @@ class Show_classes(BaseModel):
 class reate_class(BaseModel):
     id:str
     class_name:str
-
+class show_assignments(BaseModel):
+    id:str
+    class_name:str
+    
 @app.post("/signup")
 async def signu(detail:signup_detail):
     return signup(detail.d_name,detail.name,detail.password,detail.role)
@@ -50,6 +51,13 @@ async def show_cl(detail:Show_classes):
 async def c_class(detail:reate_class):
     return create_class(detail.id,detail.class_name)
 
+@app.post("/show_ass")
+async def Show_all_assignments(detail:show_assignments):
+    return all_assigments(detail.id,detail.class_name)
 
+@app.post("/create_ass")
+async def creat_new_assignment(t_id :str = Form(...),class_name:str = Form(...),name:str=Form(...),discription:str = Form(...),photos:list[UploadFile]=File(...)):
+    file_bytes_list = [await photo.read() for photo in photos]
+    return create_assigment(t_id,class_name,name,discription,file_bytes_list)
 
     
