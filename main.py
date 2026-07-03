@@ -55,9 +55,18 @@ async def c_class(detail:reate_class):
 async def Show_all_assignments(detail:show_assignments):
     return all_assigments(detail.id,detail.class_name)
 
-@app.post("/create_ass")
-async def creat_new_assignment(t_id :str = Form(...),class_name:str = Form(...),name:str=Form(...),discription:str = Form(...),photos:list[UploadFile]=File(...)):
-    file_bytes_list = [await photo.read() for photo in photos]
-    return create_assigment(t_id,class_name,name,discription,file_bytes_list)
-
+async def creat_new_assignment(
+    t_id: str = Form(...),
+    class_name: str = Form(...),
+    name: str = Form(...),
+    discription: str = Form(...),
+    photos: List[UploadFile] = File(...)  # Ensure this is List[UploadFile]
+):
+    # This reads all files into memory
+    file_bytes_list = []
+    for photo in photos:
+        content = await photo.read()
+        file_bytes_list.append(content)
+        
+    return create_assigment(t_id, class_name, name, discription, file_bytes_list)
     
