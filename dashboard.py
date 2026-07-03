@@ -82,6 +82,8 @@ def create_assigment(t_id,class_name,name,discription=None,photos=None):
         is_i = is_id_correct(t_id)
         if is_i == False:
             raise HTTPException(500,detail="is is incorrect")
+        if photos and len(photos) > 4 :
+            raise HTTPException(500,detail="too many photos max limit is only 4")
         photos_url = None
         result = {
             "teacher_id":t_id,
